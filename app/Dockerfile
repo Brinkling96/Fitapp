@@ -12,6 +12,7 @@ libssh-dev  \
 gdb \
 sudo \
 cmake \
+catch2 \
 git -y; 
 #sudo passwd root 'sean';
 
