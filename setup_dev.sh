@@ -10,16 +10,7 @@ docker-compose up -d
 
 docker build -t $image  ./app 
 
-docker run -dt --name=$container --network=$net --mount src="$(pwd)"/app,target=/usr/src/app,type=bind $image
+docker run -dt --name=$container --network=$net --mount src="$(pwd)"/app,target=/usr/src/FitApp,type=bind $image
 
 docker exec -ti $container bash
 
-mkdir build
-
-cd build
-
-cmake -S .. -B .
-
-make
-
-./Tests
