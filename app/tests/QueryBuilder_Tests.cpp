@@ -1,6 +1,8 @@
 #include <catch2/catch.hpp>
 
 #include "../src/SQL_Query.hpp"
+#include "../src/Date.hpp"
+#include "../src/Routine.hpp"
 
 
 

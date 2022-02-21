@@ -1,6 +1,9 @@
 #include <sstream>
 
 #include "SQL_Query.hpp"
+#include "DB_connection.hpp"
+#include "Routine.hpp"
+#include "Date.hpp"
 
 InsertWorkout::InsertWorkout(const Date& date, WorkoutData* data, const std::unordered_map<std::string,int>& exerciseMap, int* s_id){
     
@@ -44,12 +47,13 @@ Query_Factory::Query_Factory(DB_connection* conn){
         this->exerciseMap[row[1].as<std::string>()]=row[0].as<int>();
     }
 
-    SQL_Query q(    "SELECT s.sid\n"
+    q= SQL_Query(    "SELECT s.sid\n"
                     "FROM sets\n"
                     "ORDER BY s.sid DESC;");
     conn->execute(&q);
-    this->set_id = new int(q.result.at(0).at(0));
+    this->set_id = new int(q.result.at(0).at(0).as<int>());
 }
 
 SQL_Query* Query_Factory::InsertQuery(WorkoutData* data){
     return new InsertWorkout(getDate(),data,exerciseMap,set_id);
+}

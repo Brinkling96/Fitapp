@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 
 #include "../src/DB_connection.hpp"
-
+#include "../src/SQL_Query.hpp"
 
 //This Test requires that a testdb exists
 

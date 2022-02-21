@@ -2,10 +2,10 @@
 #include <unordered_map>
 #include <pqxx/pqxx>
 
-#include "Date.hpp"
-#include "Routine.hpp"
 
-
+class DB_connection;
+class Date;
+struct WorkoutData;
 
 struct SQL_Query{
     

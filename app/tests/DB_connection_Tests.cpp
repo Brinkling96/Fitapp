@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "../src/DB_connection.hpp"
+#include "../src/SQL_Query.hpp"
 
 
 

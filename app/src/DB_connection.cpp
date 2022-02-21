@@ -1,5 +1,5 @@
 #include "DB_connection.hpp"
-
+#include "SQL_Query.hpp"
 
 int No_Pass::getPassword(char* mPass, int size){
     memset(mPass,'\0',size);

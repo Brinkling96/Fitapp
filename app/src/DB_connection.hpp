@@ -8,7 +8,7 @@
 #include <libssh/libsshpp.hpp>
 
 
-#include "SQL_Query.hpp"
+class SQL_Query;
 
 
 class Password_Strategy{
