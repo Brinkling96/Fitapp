@@ -1,0 +1,3 @@
+/usr/src/FitApp/build/CMakeFiles/rebuild_cache.dir
+/usr/src/FitApp/build/CMakeFiles/edit_cache.dir
+/usr/src/FitApp/build/CMakeFiles/Tests.dir
