@@ -5,14 +5,13 @@
 
 //This Test requires that a testdb exists
 
-static std::array<char*,5> inputs = {"I am the exe name","postgresql","5432","sean","postgres"};
+static std::array<char*,5> inputs = {"I am the exe name","testDB","5433","sean","testdb"};
 
 struct TestDB{
     DB_connection* conn;
 
     TestDB(){
         //create conn to testdb
-        inputs.at(4) = "testdb";
         No_Pass strategy;
         this->conn = new DB_connection(inputs,&strategy);
         //Put data into test db

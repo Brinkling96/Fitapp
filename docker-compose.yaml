@@ -9,23 +9,27 @@ services:
       PGADMIN_DEFAULT_PASSWORD: sean
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-  postgresql:
+  postgresql: #"DNS" of instance
     image: 'postgres:latest'
     environment:
       POSTGRES_USER: sean
       POSTGRES_PASSWORD: sean
       POSTGRES_DB: Fit
+      PGPORT: 5432
       #location in container for PGSQL data
       PGDATA: /var/lib/postresql/data
     #Specifying VolumeName to persist data on my Machine. By doing it this way combinded with *, I am telling docker IDC where this is persisted 
     volumes:
       - db-data:/var/lib/postresql/data
-  #gcc:
-   # build: ./app
-    #By specifying it this way, I am telling docker where to persist volume
-    #volumes:
-     # - ./app:/usr/src/FitApp
+  testDB: #"DNS" of instance
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_USER: sean
+      POSTGRES_PASSWORD: sean
+      POSTGRES_DB: testdb
+      PGPORT: 5433 #port running on
 
+   
 volumes:
   #This will create a volumne to use on my machine for this mult containner init
   db-data:

@@ -1,9 +1,13 @@
 #!/bin/bash
 
-docker network create -d bridge FitAppNet
+net=FitAppNet
+image=fitapp_cppdev:1.1
+container=fitapp_CPPDEV
+
+docker network create -d bridge $net
 
 docker-compose up -d
 
-docker build -t fitapp_cppdev:1.1  ./app 
+docker build -t $image  ./app 
 
-docker run -dt --name=fitapp_CPPDEV --network=FitAppNet --mount src="$(pwd)"/app,target=/usr/src/app,type=bind fitapp_cppdev:1.1
+docker run -dt --name=$container --network=$net --mount src="$(pwd)"/app,target=/usr/src/app,type=bind $image
