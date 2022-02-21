@@ -1,7 +1,5 @@
 FROM gcc:latest
 
-COPY . /usr/src/FitApp
-
 WORKDIR /usr/src/FitApp
 
 RUN apt update ; \
