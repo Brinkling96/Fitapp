@@ -1,1 +1,0 @@
-/usr/local/bin/c++ -lpq -lpqxx -lssh CMakeFiles/FitApp.dir/tests/connector_Example.cpp.o -o FitApp 

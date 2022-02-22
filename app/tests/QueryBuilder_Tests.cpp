@@ -16,7 +16,8 @@ struct TestWorkout{
         set1->rep_times.push_back(3);
 
         SetData* set2 = new SetData(2);
-        set2->rep_times.push_back(14);
+        set2->rep_times.push_back(14)
+;
         set2->rep_times.push_back(15);
 
         ExerciseData* e1 = new ExerciseData(std::string("test0"),2);
@@ -38,7 +39,7 @@ struct TestWorkout{
 
 
 
-        data = new WorkoutData(2);
+        data = new WorkoutData(new Date(2022,1,14),2);
         data->exercises.push_back(e1);
         data->exercises.push_back(e2);
     }
@@ -51,19 +52,20 @@ struct TestWorkout{
 
 TEST_CASE("Build Insert Workout","[Query_Builder]"){
     TestWorkout t;
+    std::unordered_map<std::string,int> exerciseMap = {{"test0",0},{"test1",1}};
+    Query_Factory f(&exerciseMap, 0);
 
-    int* s_id = new int();
-    *s_id= 0;
 
-    SQL_Query* q = new InsertWorkout(Date(2022,1,14),t.data, {{"test0",0},{"test1",1}},  s_id );
-
+    SQL_Query* q = f.InsertWorkoutData(t.data);
 
     std::string output = q->query;
 
-
-    std::string expected = "INSERT INTO Workout VALUES (\'2022-1-14\',{0,1});\nINSERT INTO repetition VALUES ( 1,1,0,1),\n( 1,2,0,2),\n( 1,3,0,3),\n( 2,1,0,14),\n( 2,2,0,15),\n( 3,1,1,26),\n( 3,2,1,27),\n( 3,3,1,28),\n( 4,1,1,39),\n( 4,2,1,310);\n";
+    //date,eid,sid,rid,ms
+    std::string expected = "INSERT INTO sets VALUES (\'2022-1-14\',0,1,1,1),\n(\'2022-1-14\',0,1,2,2),\n(\'2022-1-14\',0,1,3,3),\n(\'2022-1-14\',0,2,1,14),\n(\'2022-1-14\',0,2,2,15),\n(\'2022-1-14\',1,3,1,26),\n(\'2022-1-14\',1,3,2,27),\n(\'2022-1-14\',1,3,3,28),\n(\'2022-1-14\',1,4,1,39),\n(\'2022-1-14\',1,4,2,310);\n";
 
     REQUIRE(output.compare(expected) == 0);
+
+    delete q;
 
 }
 

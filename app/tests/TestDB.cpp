@@ -1,4 +1,7 @@
+#include <array>
 #include "TestDB.hpp"
+#include "../src/SQL_Query.hpp"
+#include "../src/DB_connection.hpp"
 
 
 static std::array<char*,5> inputs = {"I am the exe name","testDB","5433","sean","testdb"};
@@ -14,7 +17,8 @@ TestDB::TestDB(){
 }
 TestDB::~TestDB(){
     SQL_Query q(    "DROP TABLE IF EXISTS sets;\n"
-                    "DROP TABLE IF EXISTS exercise;\n");
+                    "DROP TABLE IF EXISTS exercise;\n"
+                    "DROP TABLE IF EXISTS test;\n");
     conn->execute(&q);
     delete conn;
 }
@@ -23,6 +27,8 @@ void TestDB::createTestTables(){
     //populate db with test data
     SQL_Query q(    "DROP TABLE IF EXISTS sets;\n"
                     "DROP TABLE IF EXISTS exercise;\n"
+                    "DROP TABLE IF EXISTS test;\n"
+
                     "CREATE TABLE exercise (\n"
                     "eid serial PRIMARY KEY,\n"
                     "name varchar(100) NOT NULL,\n"
@@ -42,11 +48,13 @@ void TestDB::createTestTables(){
                     	"FOREIGN KEY(eid)\n"
                     	"REFERENCES Exercise(eid)\n"
                     	"ON DELETE RESTRICT\n"
-                    ");"
+                    ");\n"
+
                     
-                    
-                    );
+                    "CREATE TABLE test( id int, name varchar(25), date Date);"
+                );
     conn->execute(&q);
+
 }
 void TestDB::insertData(){
     SQL_Query q(    "INSERT INTO exercise VALUES\n"
@@ -54,6 +62,7 @@ void TestDB::insertData(){
                     "(DEFAULT,'Supported Push up',5,10),\n"
                     "(DEFAULT,'Superman',5,10),\n"
                     "(DEFAULT,'Crunches',5,20);\n"
+
                     "INSERT INTO sets VALUES\n"
                     "('2022-1-14',1,1,1,300),\n"
                     "('2022-1-14',1,1,2,301),\n"
@@ -89,3 +98,4 @@ void TestDB::insertData(){
                     "('2022-1-15',4,8,5,236);\n");
     conn->execute(&q);
 }
+

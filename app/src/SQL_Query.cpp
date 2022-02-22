@@ -1,59 +1,41 @@
 #include <sstream>
+#include <vector>
 
 #include "SQL_Query.hpp"
 #include "DB_connection.hpp"
 #include "Routine.hpp"
 #include "Date.hpp"
 
-InsertWorkout::InsertWorkout(const Date& date, WorkoutData* data, const std::unordered_map<std::string,int>& exerciseMap, int* s_id){
-    
-    std::stringstream ss;
-    ss << "INSERT INTO " << "Workout " << "VALUES "
-    << "(\'" << date.toString() <<"\',"<<"{";
-    for (ExerciseData* e: data->exercises){
-        const int e_id = exerciseMap.at(e->name);
-        ss << e_id << ",";
+
+void Query_Factory::parseExerciseData(std::stringstream& ss, ExerciseData* e, const Date* date) {
+    auto& sets = e->sets;
+    int e_id = exerciseMap[e->name];
+    for (SetData* set : sets){
+            parseSetData(ss,set,date,e_id);
     }
-    ss.seekp(-1,ss.cur);
-    ss << "});\n";
-    ss << "INSERT INTO " << "repetition " << "VALUES ";
+}
+
+void Query_Factory::parseSetData(std::stringstream& ss, SetData* s, const Date* date, const int& e_id){
+    this->set_id++;
+    int rep_count =1;
+    const std::vector<unsigned int>& rep_times= s->rep_times;
+    for (unsigned int rep_time : rep_times){
+        ss << "(\'" << date->toString() <<"\'," << e_id << "," << this->set_id << "," << rep_count++ << "," <<  rep_time << "),\n";
+    }
+}
+
+
+Query_Factory::Query_Factory(std::unordered_map<std::string,int>* exerciseMap, int set_id) : exerciseMap{(*exerciseMap)},set_id{set_id} {
+}
+
+SQL_Query* Query_Factory::InsertWorkoutData(WorkoutData* data){
+    std::stringstream ss;
+    ss << "INSERT INTO sets VALUES ";
+
     for (ExerciseData* e: data->exercises){
-        auto& sets = e->sets;
-        const int e_id = exerciseMap.at(e->name);
-        for (SetData* set : sets){
-            (*s_id)++;
-            const std::vector<unsigned int>& rep_times= set->rep_times;
-            int i =1;
-            for (unsigned int rep : rep_times){
-                ss << "( "<< *s_id << "," << i++ << "," << e_id << "," << rep << "),\n";
-            }
-        }
+       parseExerciseData(ss,e,data->date);
     }
     ss.seekp(-2,ss.cur);
     ss << ";\n";
-    query= ss.str();
-}
-
-
-Date Query_Factory::getDate(){
-    return Date();
-}
-
-Query_Factory::Query_Factory(DB_connection* conn){
-    SQL_Query q(    "SELECT *\n"
-                    "FROM exercise;");
-    conn->execute(&q);
-    for(auto row : q.result){
-        this->exerciseMap[row[1].as<std::string>()]=row[0].as<int>();
-    }
-
-    q= SQL_Query(    "SELECT s.sid\n"
-                    "FROM sets\n"
-                    "ORDER BY s.sid DESC;");
-    conn->execute(&q);
-    this->set_id = new int(q.result.at(0).at(0).as<int>());
-}
-
-SQL_Query* Query_Factory::InsertQuery(WorkoutData* data){
-    return new InsertWorkout(getDate(),data,exerciseMap,set_id);
+    return new SQL_Query(ss.str());
 }

@@ -1,4 +1,6 @@
 #include "Routine.hpp"
+#include "Date.hpp"
+
 
 SetData::SetData(int reps){
     rep_times.reserve(reps);
@@ -15,14 +17,16 @@ ExerciseData::~ExerciseData(){
     }
 }
 
-WorkoutData::WorkoutData(int num_exercises){
+WorkoutData::WorkoutData(const Date* date, int num_exercises){
     exercises.reserve(num_exercises);
+    this->date = date;
 }
 
 WorkoutData::~WorkoutData(){
     for (auto e: exercises){
         delete e;
     }
+    delete date;
 }
 
 
@@ -61,7 +65,7 @@ Routine::Routine(std::vector<Exercise> routine): routine{routine}{
 }
 
 WorkoutData* Routine::DoRoutine(){       
-    WorkoutData* WorkoutTime = new WorkoutData(routine.size());  
+    WorkoutData* WorkoutTime = new WorkoutData(new Date(),routine.size());  
     for(Exercise e: routine){
         WorkoutTime->exercises.push_back(e.DoExercise());
     }
