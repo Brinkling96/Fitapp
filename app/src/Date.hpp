@@ -1,11 +1,13 @@
+#pragma once
 #include <exception>
 #include <string>
-
-
+#include <ctime>
+#include <sstream>
 
 class DateRangeException: public std::exception{
     const char * what() const throw ();
 };
+
 
 class Date{
 

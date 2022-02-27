@@ -7,7 +7,7 @@
 
 
 /*
-TEST_CASE("Build Routine","[Routine]"){
+TEST_CASE("Build Workout","[Workout]"){
     Exercise squat("Full Body Squat", 5, 10);
     //Exercise pushup("Assisted Push up", 5, 10);
     //Exercise superman("Superman", 5, 10);
@@ -19,7 +19,7 @@ TEST_CASE("Build Routine","[Routine]"){
    // n.push_back(superman);
     //n.push_back(crunches);
 
-    Routine normal(n);
+    Workout normal(n);
     
     WorkoutData* data = normal.DoRoutine();
 

@@ -1,9 +1,4 @@
-#include <ctime>
-#include <sstream>
-
 #include "Date.hpp"
-
-
 
 const char * DateRangeException::what() const throw (){
     return "Date Range Exception, make sure to check your date is a valid date!";
@@ -52,6 +47,7 @@ Date::Date(unsigned short year,   unsigned short month,   unsigned short day){
     this->day = day;
 }
 
+
 Date::Date(){
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
@@ -60,10 +56,9 @@ Date::Date(){
     this->day = now->tm_mday;
 }
 
+
 const std::string Date::toString() const{
     std::stringstream ss;
     ss << year <<"-"<<month<<"-"<<day;
-
     return ss.str();
-
 }

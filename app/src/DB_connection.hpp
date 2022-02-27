@@ -1,38 +1,23 @@
-#include <iostream>
-#include <array>
+#pragma once
 
-#include <memory>
 #include <pqxx/pqxx>
+#include <array>
+#include <sstream>
+#include <iostream>
 
-#include <libssh/libssh.h>
-#include <libssh/libsshpp.hpp>
+#include "User_Input_Strategy.hpp"
+#include "SQL_Query.hpp"
 
 
-class SQL_Query;
-
-
-class Password_Strategy{
-    public:
-    virtual int getPassword(char* mPass, int size) = 0;
-};
-
-class No_Pass : public Password_Strategy{
-    public:
-    int getPassword(char* mPass, int size) override;
-};
-
-class User_Input_Pass : public Password_Strategy{
-    public:
-    int getPassword(char* mPass, int size) override;
-};
 
 class DB_connection{
     pqxx::connection* conn;
 
     public:
-    DB_connection(std::array<char*,5> inputs, Password_Strategy* pass_Strat);
-
+    DB_connection(std::array<const char*,5> inputs, User_Input_Strategy* inputFn, Output_Strategy* outputFn);
+    ~DB_connection();
     bool execute(SQL_Query* query);
+
     
 
 };

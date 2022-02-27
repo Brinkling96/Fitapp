@@ -1,10 +1,7 @@
-#include <sstream>
-#include <vector>
-
 #include "SQL_Query.hpp"
-#include "DB_connection.hpp"
-#include "Routine.hpp"
-#include "Date.hpp"
+
+Query_Factory::Query_Factory(std::unordered_map<std::string,int>* exerciseMap, int set_id) : exerciseMap{(*exerciseMap)},set_id{set_id} {
+}
 
 
 void Query_Factory::parseExerciseData(std::stringstream& ss, ExerciseData* e, const Date* date) {
@@ -15,6 +12,7 @@ void Query_Factory::parseExerciseData(std::stringstream& ss, ExerciseData* e, co
     }
 }
 
+
 void Query_Factory::parseSetData(std::stringstream& ss, SetData* s, const Date* date, const int& e_id){
     this->set_id++;
     int rep_count =1;
@@ -24,9 +22,6 @@ void Query_Factory::parseSetData(std::stringstream& ss, SetData* s, const Date* 
     }
 }
 
-
-Query_Factory::Query_Factory(std::unordered_map<std::string,int>* exerciseMap, int set_id) : exerciseMap{(*exerciseMap)},set_id{set_id} {
-}
 
 SQL_Query* Query_Factory::InsertWorkoutData(WorkoutData* data){
     std::stringstream ss;

@@ -1,13 +1,14 @@
+#pragma once
+
 #include <string>
-#include <unordered_map>
 #include <pqxx/pqxx>
+#include <unordered_map>
+#include <sstream>
+#include <sstream>
+#include <vector>
 
-
-class DB_connection;
-class Date;
-struct WorkoutData;
-struct ExerciseData;
-struct SetData;
+#include "Routine.hpp"
+#include "Date.hpp"
 
 struct SQL_Query{
     
@@ -19,10 +20,6 @@ struct SQL_Query{
     protected:
     SQL_Query(){};
 };
-
-
-
-
 
 
 class Query_Factory{ //TODO: Become an Obs to update members?

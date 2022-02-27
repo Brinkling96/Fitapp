@@ -1,16 +1,15 @@
-#include <array>
 #include "TestDB.hpp"
-#include "../src/SQL_Query.hpp"
-#include "../src/DB_connection.hpp"
 
-
-static std::array<char*,5> inputs = {"I am the exe name","testDB","5433","sean","testdb"};
+static std::array<const char*,5> inputs = {"I am the exe name","testDB","5433","sean","testdb"};
 
 
 TestDB::TestDB(){
     //create conn to testdb
-    No_Pass strategy;
-    this->conn = new DB_connection(inputs,&strategy);
+    User_Input_Strategy* inputFn = new Auto_Input_Strategy(std::string("sean")); 
+    Output_Strategy* outputFn = new Null_Output_Strategy();
+    this->conn = new DB_connection(inputs,inputFn,outputFn);
+    delete inputFn;
+    delete outputFn;
     //Put data into test db
     createTestTables();
     insertData();

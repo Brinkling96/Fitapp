@@ -1,28 +1,19 @@
 #include "DB_connection.hpp"
-#include "SQL_Query.hpp"
 
-int No_Pass::getPassword(char* mPass, int size){
-    memset(mPass,'\0',size);
-    strcpy(mPass,"sean");
-    return 0;
-}
-
-int User_Input_Pass::getPassword(char* mPass, int size){
-    memset(mPass, '\0', size);
-    return ssh_getpass("Database Password : ", mPass, sizeof(size),0,0);
-}
-
-DB_connection::DB_connection(std::array<char*,5> inputs, Password_Strategy* pass_Strat){
+DB_connection::DB_connection(std::array<const char*,5> inputs, User_Input_Strategy* inputFn, Output_Strategy* outputFn){
     std::stringstream ss;
-    char mPass[20]; //TODO
-    int rc = pass_Strat->getPassword(mPass,20);
-    if (rc == 0){
-        ss << "postgresql://" << inputs[3];
-        ss << ":" << mPass << "@" << inputs[1] << ":" << inputs[2] << "/" << inputs[4];
-    }
-    std::cout << ss.str() << std::endl;
+    std::string pass = inputFn->getInput();
+    ss << "postgresql://" << inputs[3];
+    ss << ":" << pass << "@" << inputs[1] << ":" << inputs[2] << "/" << inputs[4];
+    outputFn->output(ss.str());
     conn = new pqxx::connection(ss.str().c_str());
 }
+
+DB_connection::~DB_connection(){
+    delete conn;
+}
+
+
 
 bool DB_connection::execute(SQL_Query* query){
     try{
@@ -40,5 +31,4 @@ bool DB_connection::execute(SQL_Query* query){
     }
     return true;
 }
-
 

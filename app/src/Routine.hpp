@@ -1,18 +1,20 @@
-#include <iostream>
+#pragma once
+
 #include <string>
 #include <vector>
-#include <array>
+#include <sstream>
 #include <chrono>
 
-class Date;
+#include "Date.hpp"
+#include "User_Input_Strategy.hpp"
 
 
+//Structs which collect workout data to later be processed by other classes.
 struct SetData{
     std::vector<unsigned int> rep_times;
 
     SetData(int reps);
 };
-
 
 struct ExerciseData{
     std::string name;
@@ -24,7 +26,6 @@ struct ExerciseData{
 
 };
 
-
 struct WorkoutData{
     const Date* date;
     std::vector<ExerciseData*> exercises;
@@ -35,48 +36,49 @@ struct WorkoutData{
 };
 
 
-class Exercise_Stragety{
-    public:
-    virtual ExerciseData* DoExercise() = 0;
-};
 
-class User_Input_Stragety : public Exercise_Stragety{
-    public:
-    ExerciseData* DoExercise() override;
-};
 
-class Static_Stragety : public Exercise_Stragety{
-    ExerciseData* data;
-    public:
-    Static_Stragety(ExerciseData* data);
-    ExerciseData* DoExercise() override;
-};
 
+
+
+class User_Input_Strategy;
+class Output_Strategy;
+
+//In a sense, these classses build WorkoutData structs to later get processed by other classes.
 class Exercise{
     private:
+    User_Input_Strategy* inputFn;
+    Output_Strategy* outputFn;
+
     std::string name;
     unsigned short sets;
     unsigned short reps;
     
-    public:
-
-    Exercise(std::string name, unsigned short sets, unsigned short reps);
     
+    public:
+    Exercise(User_Input_Strategy* inputFn, Output_Strategy* outputFn,std::string name, unsigned short sets, unsigned short reps);
+    ~Exercise();
     ExerciseData* DoExercise();
+    
+    private:
+    SetData* DoSet(int setNum);
 
-    std::string getName();
+    void printStartExerciseMessage();
+    void printStartSetMessage(int setNum);
+    void printRepMessage(int repNum);
+    unsigned int getRepTime();
+    void printSetEndMessage();
+
+
 };
 
-
-
-
-
-class Routine{
+class Workout{
     private:
     std::vector<Exercise> routine;
+    User_Input_Strategy* strategy; 
 
     public:
-    Routine(std::vector<Exercise> routine);
+    Workout(std::vector<Exercise> routine);
 
     WorkoutData* DoRoutine();
 

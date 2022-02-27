@@ -1,4 +1,5 @@
 #include <catch2/catch.hpp>
+#include <iostream>
 #include <memory>
 #include <pqxx/pqxx>
 #include <array>
@@ -14,7 +15,6 @@
 
 
 //stupid fixture
-No_Pass strategy;
 static TestDB testdb;
 
 TEST_CASE("Does Connection work?", "[DB_connection]"){
