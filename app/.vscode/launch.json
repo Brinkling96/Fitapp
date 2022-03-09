@@ -34,7 +34,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Tests",
-            "args": ["[Query_Builder]"],
+            "args": ["[Coordinator]"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

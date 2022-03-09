@@ -48,6 +48,10 @@ ExerciseData* Exercise::DoExercise(){
     return exerciseData;
 }
 
+std::string Exercise::getName(){
+    return name;
+}
+
 
 void Exercise::printStartExerciseMessage(){
     std::stringstream ss;
@@ -99,6 +103,10 @@ void Exercise::printSetEndMessage(){
 
 
 Workout::Workout(std::vector<Exercise> routine): routine{routine}{
+}
+
+Workout::Workout(){
+    this->routine = std::vector<Exercise>();
 }
 
 WorkoutData* Workout::DoRoutine(){       

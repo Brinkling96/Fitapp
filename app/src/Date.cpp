@@ -51,9 +51,9 @@ Date::Date(unsigned short year,   unsigned short month,   unsigned short day){
 Date::Date(){
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
-    this->year = now->tm_year;
-    this->month = now->tm_mon+1;
-    this->day = now->tm_mday;
+    this->year = (unsigned short) now->tm_year+1900;
+    this->month= (unsigned short) now->tm_mon+1;
+    this->day = (unsigned short) now->tm_mday;
 }
 
 

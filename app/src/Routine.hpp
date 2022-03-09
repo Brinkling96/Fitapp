@@ -59,6 +59,8 @@ class Exercise{
     Exercise(User_Input_Strategy* inputFn, Output_Strategy* outputFn,std::string name, unsigned short sets, unsigned short reps);
     ~Exercise();
     ExerciseData* DoExercise();
+
+    std::string getName();
     
     private:
     SetData* DoSet(int setNum);
@@ -75,10 +77,10 @@ class Exercise{
 class Workout{
     private:
     std::vector<Exercise> routine;
-    User_Input_Strategy* strategy; 
 
     public:
     Workout(std::vector<Exercise> routine);
+    Workout();
 
     WorkoutData* DoRoutine();
 

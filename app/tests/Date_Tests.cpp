@@ -81,10 +81,18 @@ TEST_CASE("Leap year check", "[Date]"){
 
 }
 
-TEST_CASE("Date to String check","Date"){
+TEST_CASE("Date to String check","[Date]"){
     Date* date = new Date(2021,1,14);
 
     const char* ds = date->toString().c_str();
 
     REQUIRE(strcmp("2021-1-14",ds) == 0);
+}
+
+TEST_CASE("Default Date Check","[Date]"){
+    Date d1;
+    std::time_t t = std::time(0);
+    std::tm* now = std::localtime(&t);
+    Date d2((unsigned short) now->tm_year+1900,(unsigned short) now->tm_mon+1, (unsigned short) now->tm_mday);
+    REQUIRE(strcmp(d1.toString().c_str(),d2.toString().c_str()) == 0);
 }
