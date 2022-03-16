@@ -34,8 +34,6 @@ Exercise::Exercise(User_Input_Strategy* inputFn, Output_Strategy* outputFn, std:
  : inputFn{inputFn},outputFn{outputFn},name{name},sets{sets},reps{reps} {};
 
 Exercise::~Exercise(){
-    delete inputFn;
-    delete outputFn;
 }
 
 ExerciseData* Exercise::DoExercise(){

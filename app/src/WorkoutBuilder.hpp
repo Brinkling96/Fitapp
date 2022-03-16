@@ -35,26 +35,8 @@ class Workout_Builder{
     Workout build_Workout();
 
     private:
-    std::pair<bool,Exercise*> match_output_to_Exercise(std::string output);
+    std::pair<bool,Exercise*> match_Output_To_Exercise(std::string output);
     Exercise* build_Exercise();
-
-    void printExercises(){
-        std::stringstream ss;
-        for(int i = 0; i < exercises.size(); i++){
-            ss << i << ") " << exercises.at(i).getName() << "\n";
-        }
-        outputFn->output(ss.str());
-    }
-    
-    void printSelected(){
-        std::stringstream ss;
-        ss << "\nSelected Exercises: ";
-        for(Exercise &e: exercises){
-            ss << e.getName()<< ", ";
-        }
-        ss.seekp(-2,ss.cur);
-        ss << ".\n";
-    }
-
-
+    void printExercises();
+    void printSelected(std::string name, std::vector<Exercise> elist);
 };

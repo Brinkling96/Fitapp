@@ -34,7 +34,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Tests",
-            "args": ["[Coordinator]"],
+            "args": ["[Menu_Chain]"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
