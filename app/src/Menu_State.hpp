@@ -5,6 +5,7 @@
 
 #include "User_Input_Strategy.hpp"
 #include "clear.hpp"
+#include "Menu_Chain.hpp"
 
 
 class MenuStateException: public std::exception{
@@ -19,6 +20,7 @@ class Menu_State{
     protected:
     User_Input_Strategy* inputFn;
     Output_Strategy* outputFn;
+    
 
     public:
     Menu_State(User_Input_Strategy* inputFn, Output_Strategy* outputFn);

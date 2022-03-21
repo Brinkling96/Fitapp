@@ -61,6 +61,7 @@ class Exercise{
     ExerciseData* DoExercise();
 
     std::string getName();
+    std::string* getName_ptr(); //if found please delete me and clean up resulting errors
     
     private:
     SetData* DoSet(int setNum);

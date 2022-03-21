@@ -34,7 +34,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Tests",
-            "args": ["[Menu_Chain]"],
+            "args": ["[WorkoutBuilder]"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

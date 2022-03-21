@@ -1,8 +1,5 @@
 #include "WorkoutBuilder.hpp"
 
-//TODO ideas, make an workout builder helper object which coordinates the
-
-
 WorkoutBuilderException::WorkoutBuilderException(std::string errorMessage): errorMessage{errorMessage} {};
 
 const char * WorkoutBuilderException::what() const throw (){
@@ -10,8 +7,61 @@ const char * WorkoutBuilderException::what() const throw (){
 }
 
 
-Workout_Builder::Workout_Builder(std::vector<Exercise> exercises, std::unordered_map<std::string, Workout> presets, User_Input_Strategy* inputFn, Output_Strategy* outputFn)
-                                : exercises{exercises},presets{presets},inputFn{inputFn},outputFn{outputFn} {};
+Workout_Builder::Container_Index_Option_Chain_Link::Container_Index_Option_Chain_Link(
+    std::string prompt, std::vector<Exercise>* container
+    )
+    : prompt{prompt}, container{container} {};
+        
+
+Workout_Builder::Container_Index_Option_Chain_Link::Container_Index_Option_Chain_Link(
+    Menu_Chain<OutputMatch>* next_Chain, std::string prompt, std::vector<Exercise>* container
+    )
+    : Menu_Chain<OutputMatch>(next_Chain), prompt{prompt}, container{container} {}
+
+Workout_Builder::Workout_Builder::Container_Index_Option_Chain_Link::~Container_Index_Option_Chain_Link() {delete next_Chain;};
+
+void Workout_Builder::Container_Index_Option_Chain_Link::setNext(Menu_Chain<OutputMatch>* next_Chain) 
+    {this->next_Chain = next_Chain;};
+
+Workout_Builder::OutputMatch Workout_Builder::Container_Index_Option_Chain_Link::select(std::string select) {
+    try{
+        long unsigned int selection = std::stoul(select);
+        if ( selection < container->size() ){
+            OutputMatch out = {true,&(container->at(selection))};
+            return out; 
+        }
+    } catch (std::invalid_argument const &e){
+        //conversion failed, checking next chain;
+    }
+    
+    return this->next_Chain->select(select);
+
+    
+}
+
+std::string Workout_Builder::Container_Index_Option_Chain_Link::toString_Chain(){
+    return prompt + this->next_Chain->toString_Chain();
+}
+
+
+
+Workout_Builder::Workout_Builder
+    (std::vector<Exercise> exercises, std::unordered_map<std::string, Workout> presets, 
+    User_Input_Strategy* inputFn, Output_Strategy* outputFn
+    )
+    : exercises{exercises},presets{presets},inputFn{inputFn},outputFn{outputFn} 
+{
+
+
+    OutputMatch end_Option = {false, nullptr};
+    Menu_Chain<OutputMatch>* endBuild = new String_Option_Chain_Link<OutputMatch>(std::string("Enter D to finish building the Workout\n"),std::string("D"), end_Option);
+
+    OutputMatch new_Option = {true, nullptr};
+    Menu_Chain<OutputMatch>* newExercise = new String_Option_Chain_Link<OutputMatch>(endBuild,std::string("Enter N to create new Exercise\n"),std::string("N"), new_Option);
+
+    this->options_Chain= new Container_Index_Option_Chain_Link(newExercise,std::string("Enter <number> to select Exercise\n"),&(this->exercises));
+
+};
 
 Workout_Builder::~Workout_Builder(){};
 
@@ -26,7 +76,7 @@ Workout Workout_Builder::build_Workout(){
                         "Enter Workout Name:");
     std::string name= inputFn->getInput();
     if (presets.find(name) != presets.end()){
-        throw WorkoutBuilderException(  "Workouts with the same name are Not Supported\n"
+        throw WorkoutBuilderException(      "Workouts with the same name are Not Supported\n"
                                             "Try adding repetition or set number to the name");
     }
 
@@ -34,17 +84,36 @@ Workout Workout_Builder::build_Workout(){
     bool building = true;
     while(building){
         clear();
-        printExercises();
-        printSelected(name,exerciseList);
+        std::stringstream ss;
+        ss << stringify_Exercises();
+        ss << "\n";
+        ss << options_Chain->toString_Chain();
+        ss << "\n";
+        ss << stringify_Selected_Exercises(name,exerciseList);
+
+        outputFn->output(ss.str());
+
         std::string output = inputFn->getInput();
         
-        std::pair<bool,Exercise*> pairOut = match_Output_To_Exercise(output);
-        building = pairOut.first;
-        if (pairOut.second != nullptr){
-            Exercise e = *(pairOut.second);
-            exerciseList.push_back(e);
+        OutputMatch user_sel = match_Output_To_Exercise(output);
+        building = user_sel.moreExercises;
+        if (user_sel.sel_Exercises == nullptr && building){
+            try{
+                Exercise e = *(build_Exercise());
+                exerciseList.push_back(e);
+            } catch (WorkoutBuilderException const &e){
+                outputFn->output(std::string(e.what()));
+                inputFn->getInput();
+            } catch (std::invalid_argument const &e){
+                outputFn->output(std::string(e.what()));
+                inputFn->getInput();
+            } catch (std::out_of_range const &e){
+                outputFn->output(std::string(e.what()));
+                inputFn->getInput();
+            }
+        } else if (user_sel.sel_Exercises != nullptr && building ) {
+            exerciseList.push_back(*(user_sel.sel_Exercises));
         }
-
     }
     Workout newWorkout(exerciseList);
     presets[name] = newWorkout;
@@ -52,6 +121,18 @@ Workout Workout_Builder::build_Workout(){
 }
 
 
+Workout_Builder::OutputMatch Workout_Builder::match_Output_To_Exercise(std::string user_input){
+    try{
+        return options_Chain->select(user_input);
+    } catch (Menu_Chain_Exception const &e){
+        outputFn->output(std::string("Option not found\n"));
+        inputFn->getInput();
+        OutputMatch out = {true,nullptr};
+        return out;
+    }
+}
+
+/*
 std::pair<bool,Exercise*> Workout_Builder::match_Output_To_Exercise(std::string output){
     long unsigned int selection;
     bool stoul_Conversion = true;
@@ -89,6 +170,7 @@ std::pair<bool,Exercise*> Workout_Builder::match_Output_To_Exercise(std::string 
         return std::pair(true,nullptr);
     }
 }
+*/
 
 Exercise* Workout_Builder::build_Exercise(){
     clear();
@@ -104,7 +186,6 @@ Exercise* Workout_Builder::build_Exercise(){
     outputFn->output("Enter Exercises sets:");
     unsigned short sets = static_cast<unsigned short>(std::stoul(inputFn->getInput()));
 
-
     outputFn->output("Enter Exercises reps:");
     unsigned short reps = static_cast<unsigned short>(std::stoul(inputFn->getInput()));
 
@@ -113,32 +194,29 @@ Exercise* Workout_Builder::build_Exercise(){
     return &(this->exercises.at(exercises.size()-1));
 }
 
-void Workout_Builder::printExercises(){
-        std::stringstream ss;
-        ss <<   "Workout Builder Menu\n\n" 
-                "Exercises: \n";
-        for(long unsigned int i = 0; i < exercises.size(); i++){
-            ss << i << ") " << exercises.at(i).getName() << "\n";
-        }
+std::string Workout_Builder::stringify_Exercises(){
+    std::stringstream ss;
+    ss <<   "Workout Builder Menu\n\n" 
+            "Exercises: \n";
+    for(long unsigned int i = 0; i < exercises.size(); i++){
+        ss << i << ") " << exercises.at(i).getName() << "\n";
+    }
 
-        ss <<   "\n"
-                "Enter <number> to select Exercise\n"
-                "Enter D to finish Workout\n"
-                "Enter N to create new Exercise\n";
-        outputFn->output(ss.str());
-    }
+    return ss.str();
+}
     
-    void Workout_Builder::printSelected(std::string name, std::vector<Exercise> elist){
-        std::stringstream ss;
-        ss <<   "Workout Name: " << name << "\n" 
-                "Selected Exercises: ";
-        if (elist.size() == 0){
-            ss << "None, ";
+std::string Workout_Builder::stringify_Selected_Exercises(std::string name, std::vector<Exercise> elist){
+    std::stringstream ss;
+    ss <<   "Workout Name: " << name << "\n" 
+            "Selected Exercises: ";
+    if (elist.size() == 0){
+        ss << "None, ";
+    } else {
+        for(long unsigned int i = 0; i < elist.size(); i++){
+            ss << elist.at(i).getName() << ", ";
         }
-        for(Exercise &e: elist){
-            ss << e.getName()<< ", ";
-        }
-        ss.seekp(-2,ss.cur);
-        ss << ".";
-        outputFn->output(ss.str());
     }
+    ss.seekp(-2,ss.cur);
+    ss << ".";
+    return ss.str();
+}

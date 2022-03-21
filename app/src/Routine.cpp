@@ -50,6 +50,10 @@ std::string Exercise::getName(){
     return name;
 }
 
+std::string* Exercise::getName_ptr(){
+    return &name;
+}
+
 
 void Exercise::printStartExerciseMessage(){
     std::stringstream ss;

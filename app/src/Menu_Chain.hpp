@@ -1,19 +1,15 @@
 #pragma once
-#include <exception>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
-class Menu_Chain_Exception: public std::exception{
-    std::string errMsg;
-    public:
-    Menu_Chain_Exception(std::string errMsg);
-    const char * what() const throw ();
-};
+#include "Menu_Chain_Exception.hpp"
 
+
+
+template <typename T>
 class Menu_Chain{
     protected:
-    Menu_Chain* next_Chain;
+    Menu_Chain<T>* next_Chain;
 
     public: 
     Menu_Chain();
@@ -21,31 +17,41 @@ class Menu_Chain{
     virtual ~Menu_Chain();
 
     virtual void setNext(Menu_Chain* next_Chain) = 0;
-    virtual unsigned int select(std::string select) = 0; //TODO this is ugly
+    virtual T select(std::string select) = 0; //TODO this is ugly
+    virtual std::string toString_Chain() =0;
 };
 
-
-class Null_Chain_Link : public Menu_Chain{
+template <typename T>
+class Null_Chain_Link : public Menu_Chain<T>{
     public:
     Null_Chain_Link();
     ~Null_Chain_Link();
 
-    void setNext(Menu_Chain* next_Chain) override;
-    unsigned int select(std::string select) override;
+    void setNext(Menu_Chain<T>* next_Chain) override;
+    T select(std::string select) override;
+    std::string toString_Chain() override;
 };
 
-class String_Option_Chain_Link : public Menu_Chain{
+
+template <typename T>
+class String_Option_Chain_Link : public Menu_Chain<T>{
+    std::string prompt;
     std::string option;
-    unsigned int result;
+    T result;
 
     public:
-    String_Option_Chain_Link(std::string option, unsigned int result);
-    String_Option_Chain_Link(Menu_Chain* next_Chain, std::string option, unsigned int result);
+    String_Option_Chain_Link(std::string prompt, std::string option, T result);
+    String_Option_Chain_Link(Menu_Chain<T>* next_Chain, std::string prompt, std::string option, T result);
     ~String_Option_Chain_Link();
 
-    void setNext(Menu_Chain* next_Chain) override;
-    void setResult(unsigned int result);
-    unsigned int select(std::string select) override;
+    void setNext(Menu_Chain<T>* next_Chain) override;
+    void setResult(T result);
+    T select(std::string select) override;
+    std::string toString_Chain() override;
+
 
 };
+
+
+#include "Menu_Chain.tpp"
 

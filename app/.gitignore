@@ -49,3 +49,7 @@ _deps
 build/
 
 [Bb][Uu][Ii][Ll][Dd]/
+
+
+###My Custom ignores
+temp
